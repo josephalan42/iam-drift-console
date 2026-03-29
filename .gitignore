@@ -5,3 +5,9 @@ __pycache__/
 *.pyd
 error.logs
 watcher_runtime.log
+baseline_snapshot.json
+current_snapshot.json
+drift_report.json
+drift_recommendations.json
+event_context.json
+watcher_checkpoint.json
