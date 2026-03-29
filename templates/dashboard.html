@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IAM Drift Dashboard</title>
+  <script>
+    (function () {
+      const stored = localStorage.getItem("dashboard-theme");
+      document.documentElement.setAttribute("data-theme", stored === "light" ? "light" : "dark");
+    })();
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand-block">
+        <p class="eyebrow">Security Operations</p>
+        <h1>IAM Drift Console</h1>
+        <p class="sidebar-copy">A live security view for IAM drift, risky policy changes, and AI-guided remediation.</p>
+      </div>
+
+      <nav class="side-nav">
+        <a href="#overview">Overview</a>
+        <a href="#timeline">Event Stream</a>
+        <a href="#recommendations">Recommendations</a>
+        <a href="#risk-breakdown">Risk Breakdown</a>
+      </nav>
+
+      <section class="sidebar-panel">
+        <h2>Watcher Status</h2>
+        <p class="watcher-state">
+          {% if vm.watcher_running %}
+            <span class="state-on">RUNNING</span>
+          {% else %}
+            <span class="state-off">NOT RUNNING</span>
+          {% endif %}
+        </p>
+        <p class="sidebar-meta">Updated <strong id="updatedAt">{{ vm.last_updated_utc }}</strong></p>
+      </section>
+
+      <section class="sidebar-panel" id="risk-breakdown">
+        <h2>Risk Breakdown</h2>
+        <div class="risk-list">
+          <div class="risk-row"><span>Critical</span><strong>{{ vm.severity_counts.CRITICAL }}</strong></div>
+          <div class="risk-row"><span>High</span><strong>{{ vm.severity_counts.HIGH }}</strong></div>
+          <div class="risk-row"><span>Medium</span><strong>{{ vm.severity_counts.MEDIUM }}</strong></div>
+          <div class="risk-row"><span>Low</span><strong>{{ vm.severity_counts.LOW }}</strong></div>
+        </div>
+      </section>
+
+      <section class="sidebar-panel">
+        <h2>Change Types</h2>
+        <div class="type-list">
+          {% for change_type, count in vm.change_type_counts.items() %}
+            <div class="type-row">
+              <span>{{ change_type }}</span>
+              <strong>{{ count }}</strong>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    </aside>
+
+    <main class="workspace">
+      <header class="command-bar" id="overview">
+        <div class="command-copy">
+          <p class="eyebrow">Quick Filter</p>
+          <h2>Find alerts, policies, and affected users faster</h2>
+          <p class="command-help">Type a user name, policy name, risk level, action, or service to narrow the results below.</p>
+        </div>
+        <div class="command-actions">
+          <div class="search-group">
+            <label class="search-shell" for="searchInput">
+              <span>Filter</span>
+              <input id="searchInput" type="search" placeholder='Try: test_lambda, iam:*, critical, rds, USER_ADDED_WITH_POLICIES'>
+            </label>
+            <p class="search-hint">Examples: <button class="hint-chip" type="button" data-filter="critical">critical</button><button class="hint-chip" type="button" data-filter="iam:*">iam:*</button><button class="hint-chip" type="button" data-filter="test_lambda">test_lambda</button></p>
+          </div>
+          <button id="themeToggleBtn" type="button">Light Theme</button>
+          <button id="refreshBtn" type="button">Refresh</button>
+        </div>
+      </header>
+
+      <section class="overview-grid">
+        <article class="hero-card">
+          <p class="hero-label">Active Drift Window</p>
+          <div class="hero-metric">{{ vm.summary.num_changes }}</div>
+          <p class="hero-copy">Total alert events currently visible in the filtered report.</p>
+        </article>
+        <article class="metric-card">
+          <h3>User Events</h3>
+          <p class="metric-value">{{ vm.summary.user_change_count }}</p>
+        </article>
+        <article class="metric-card emphasis-policy">
+          <h3>Policy Changes</h3>
+          <p class="metric-value">{{ vm.summary.policy_change_count }}</p>
+        </article>
+        <article class="metric-card">
+          <h3>Filter Mode</h3>
+          <p class="metric-value metric-text">{{ vm.summary.filter|upper }}</p>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <section class="stream-panel" id="timeline">
+          <div class="panel-head">
+            <div>
+              <p class="panel-kicker">Event Stream</p>
+              <h2>Alert Timeline</h2>
+            </div>
+            <span class="panel-tag">{{ vm.changes|length }} records</span>
+          </div>
+
+          <div class="table-head">
+            <span>Type</span>
+            <span>Principal</span>
+            <span>Event</span>
+            <span>Policy Impact</span>
+          </div>
+
+          <div class="stream-list">
+            {% if vm.changes %}
+              {% for change in vm.changes %}
+                {% set inline_count = change.get("added_inline_policies", [])|length %}
+                {% set managed_count = change.get("added_policies", [])|length %}
+                {% set effective_count = change.get("effective_added_policies", [])|length %}
+                {% set policy_count = change.get("policies", [])|length %}
+                <article
+                  class="stream-row searchable"
+                  data-search="{{ change.get('search_text', '') }}"
+                >
+                  <div>
+                    <p class="stream-type">{{ change.get("type", "UNKNOWN") }}</p>
+                    <p class="stream-time">{{ change.get("attached_at_utc") or change.get("context", {}).get("trigger_event_time", "n/a") }}</p>
+                  </div>
+                  <div>
+                    <p class="stream-principal">{{ change.get("user") or change.get("principal") or "n/a" }}</p>
+                    <p class="stream-meta">{{ change.get("policy_name") or "policy drift event" }}</p>
+                  </div>
+                  <div>
+                    <p class="stream-event">{{ change.get("event_name") or change.get("context", {}).get("trigger_event_name", "n/a") }}</p>
+                    <p class="stream-meta">{{ change.get("policy_arn") or "no direct ARN" }}</p>
+                  </div>
+                  <div class="impact-pills">
+                    {% if inline_count %}
+                      <span class="impact-pill">Inline {{ inline_count }}</span>
+                    {% endif %}
+                    {% if managed_count %}
+                      <span class="impact-pill">Managed {{ managed_count }}</span>
+                    {% endif %}
+                    {% if effective_count %}
+                      <span class="impact-pill">Effective {{ effective_count }}</span>
+                    {% endif %}
+                    {% if policy_count %}
+                      <span class="impact-pill">Changed {{ policy_count }}</span>
+                    {% endif %}
+                    {% if not inline_count and not managed_count and not effective_count and not policy_count %}
+                      <span class="impact-pill muted-pill">No policy payload</span>
+                    {% endif %}
+                  </div>
+                </article>
+              {% endfor %}
+            {% else %}
+              <p class="empty-state">No alerts yet.</p>
+            {% endif %}
+          </div>
+        </section>
+
+        <section class="intel-panel" id="recommendations">
+          <div class="panel-head">
+            <div>
+              <p class="panel-kicker">Threat Intel</p>
+              <h2>AI Recommendations</h2>
+            </div>
+            <span class="panel-tag">{{ vm.recommendations|length }} records</span>
+          </div>
+
+          <div class="intel-list">
+            {% if vm.recommendations %}
+              {% for rec in vm.recommendations %}
+                {% set advice = rec.get("advice", {}) %}
+                {% set severity = advice.get("severity", "MEDIUM") %}
+                {% set change = rec.get("change", {}) %}
+                <details
+                  class="intel-card searchable"
+                  {% if loop.first %}open{% endif %}
+                  data-search="{{ rec.get('search_text', '') }}"
+                >
+                  <summary>
+                    <div class="intel-summary">
+                      <div>
+                        <p class="intel-type">{{ change.get("type", "UNKNOWN") }}</p>
+                        <p class="intel-principal">{{ change.get("user") or change.get("principal") or "n/a" }}</p>
+                      </div>
+                      <div class="intel-summary-right">
+                        <p class="intel-copy">{{ advice.get("summary", "n/a") }}</p>
+                        <span class="badge sev-{{ severity|lower }}">{{ severity }}</span>
+                      </div>
+                    </div>
+                  </summary>
+
+                  <div class="intel-body">
+                    <div class="intel-section">
+                      <h3>Possible Impact</h3>
+                      <ul>
+                        {% for item in advice.get("possible_impact", []) %}
+                          <li>{{ item }}</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+
+                    <div class="intel-section">
+                      <h3>Recommended Actions</h3>
+                      <ul>
+                        {% for item in advice.get("recommended_actions", []) %}
+                          <li>{{ item }}</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+
+                    {% if advice.get("policy_impact_analysis") %}
+                      <div class="policy-table">
+                        <div class="policy-table-head">
+                          <span>Policy</span>
+                          <span>Services</span>
+                          <span>Abuse Paths</span>
+                          <span>Mitigations</span>
+                        </div>
+                        {% for p in advice.get("policy_impact_analysis", []) %}
+                          <article class="policy-table-row">
+                            <div>
+                              <p class="policy-name">{{ p.get("policy_name") or "policy" }}</p>
+                              <p class="policy-sub">{{ p.get("policy_arn") or p.get("policy_summary", "n/a") }}</p>
+                            </div>
+                            <div>
+                              <ul>
+                                {% for s in p.get("affected_services", []) %}
+                                  <li>{{ s }}</li>
+                                {% endfor %}
+                              </ul>
+                            </div>
+                            <div>
+                              <ul>
+                                {% for s in p.get("abuse_paths", []) %}
+                                  <li>{{ s }}</li>
+                                {% endfor %}
+                              </ul>
+                            </div>
+                            <div>
+                              <ul>
+                                {% for s in p.get("targeted_mitigations", []) %}
+                                  <li>{{ s }}</li>
+                                {% endfor %}
+                              </ul>
+                            </div>
+                          </article>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+
+                    <details class="nested-details">
+                      <summary>Risk Flags</summary>
+                      <pre>{{ rec.get("risk_flags", []) | tojson(indent=2) }}</pre>
+                    </details>
+                  </div>
+                </details>
+              {% endfor %}
+            {% else %}
+              <p class="empty-state">No recommendations found yet.</p>
+            {% endif %}
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    let lastHash = "{{ vm.data_hash }}";
+
+    function applyTheme(theme) {
+      const t = theme === "light" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", t);
+      localStorage.setItem("dashboard-theme", t);
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) {
+        btn.textContent = t === "dark" ? "Light Theme" : "Dark Theme";
+      }
+    }
+
+    function applySearchFilter() {
+      const input = document.getElementById("searchInput");
+      const term = (input?.value || "").trim().toLowerCase();
+      document.querySelectorAll(".searchable").forEach(function (node) {
+        const haystack = node.getAttribute("data-search") || "";
+        node.style.display = !term || haystack.includes(term) ? "" : "none";
+      });
+    }
+
+    async function refreshData() {
+      const res = await fetch("/api/data", { cache: "no-store" });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.data_hash !== lastHash) {
+        location.reload();
+        return;
+      }
+      const el = document.getElementById("updatedAt");
+      if (el && data.last_updated_utc) el.textContent = data.last_updated_utc;
+    }
+
+    document.getElementById("refreshBtn").addEventListener("click", refreshData);
+    document.getElementById("themeToggleBtn").addEventListener("click", function () {
+      const current = document.documentElement.getAttribute("data-theme") || "dark";
+      applyTheme(current === "dark" ? "light" : "dark");
+    });
+    document.getElementById("searchInput").addEventListener("input", applySearchFilter);
+    document.querySelectorAll(".hint-chip").forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        const input = document.getElementById("searchInput");
+        if (!input) return;
+        input.value = chip.getAttribute("data-filter") || "";
+        applySearchFilter();
+        input.focus();
+      });
+    });
+    applyTheme(document.documentElement.getAttribute("data-theme") || "dark");
+    setInterval(refreshData, 4000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "trigger_event": {
+    "event_name": "CreateUser",
+    "event_time": "2026-02-26T00:16:09Z",
+    "actor": "arn:aws:iam::380421147412:root",
+    "event_source": "iam.amazonaws.com",
+    "request_parameters": {
+      "userName": "new_test"
+    },
+    "resources": null
+  },
+  "written_at_utc": "2026-02-26T00:22:48.671931+00:00"
+}

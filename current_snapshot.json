@@ -1,0 +1,478 @@
+{
+  "_meta": {
+    "generated_at_utc": "2026-02-26T00:22:49.005729+00:00",
+    "generator": "iam_export_snapshot_v3",
+    "includes_resolved_managed_policy_docs": true
+  },
+  "users": {
+    "Alan": {
+      "UserArn": "arn:aws:iam::380421147412:user/Alan",
+      "CreateDate": "2025-07-10T13:03:36+00:00",
+      "AttachedManagedPolicies": [
+        {
+          "PolicyName": "AmazonEC2FullAccess",
+          "PolicyArn": "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+        },
+        {
+          "PolicyName": "AmazonS3FullAccess",
+          "PolicyArn": "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+        }
+      ],
+      "InlinePolicies": [
+        {
+          "PolicyName": "policy_attach_dynamo_cli",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "Statement1",
+                "Effect": "Allow",
+                "Action": [
+                  "dynamodb:ListTables"
+                ],
+                "Resource": "*"
+              }
+            ]
+          }
+        }
+      ],
+      "Groups": {},
+      "ResolvedManagedPolicies": {
+        "arn:aws:iam::aws:policy/AmazonEC2FullAccess": {
+          "PolicyArn": "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
+          "DefaultVersionId": "v5",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Action": "ec2:*",
+                "Effect": "Allow",
+                "Resource": "*"
+              },
+              {
+                "Effect": "Allow",
+                "Action": "elasticloadbalancing:*",
+                "Resource": "*"
+              },
+              {
+                "Effect": "Allow",
+                "Action": "cloudwatch:*",
+                "Resource": "*"
+              },
+              {
+                "Effect": "Allow",
+                "Action": "autoscaling:*",
+                "Resource": "*"
+              },
+              {
+                "Effect": "Allow",
+                "Action": "iam:CreateServiceLinkedRole",
+                "Resource": "*",
+                "Condition": {
+                  "StringEquals": {
+                    "iam:AWSServiceName": [
+                      "autoscaling.amazonaws.com",
+                      "ec2scheduled.amazonaws.com",
+                      "elasticloadbalancing.amazonaws.com",
+                      "spot.amazonaws.com",
+                      "spotfleet.amazonaws.com",
+                      "transitgateway.amazonaws.com"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "RetrievedAt": "2026-02-26T00:22:49.998285+00:00"
+        },
+        "arn:aws:iam::aws:policy/AmazonS3FullAccess": {
+          "PolicyArn": "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          "DefaultVersionId": "v2",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "s3:*",
+                  "s3-object-lambda:*"
+                ],
+                "Resource": "*"
+              }
+            ]
+          },
+          "RetrievedAt": "2026-02-26T00:22:50.286726+00:00"
+        }
+      }
+    },
+    "Alice": {
+      "UserArn": "arn:aws:iam::380421147412:user/Alice",
+      "CreateDate": "2025-07-02T14:26:26+00:00",
+      "AttachedManagedPolicies": [],
+      "InlinePolicies": [
+        {
+          "PolicyName": "create_user_cli",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "Statement1",
+                "Effect": "Allow",
+                "Action": [
+                  "iam:*"
+                ],
+                "Resource": "*"
+              }
+            ]
+          }
+        },
+        {
+          "PolicyName": "list_dynamo_db",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "Statement1",
+                "Effect": "Allow",
+                "Action": [
+                  "dynamodb:ListTables"
+                ],
+                "Resource": "*"
+              }
+            ]
+          }
+        }
+      ],
+      "Groups": {},
+      "ResolvedManagedPolicies": {}
+    },
+    "Bob": {
+      "UserArn": "arn:aws:iam::380421147412:user/Bob",
+      "CreateDate": "2025-07-10T16:27:27+00:00",
+      "AttachedManagedPolicies": [],
+      "InlinePolicies": [
+        {
+          "PolicyName": "policy_attach_dynamo_cli",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "Statement1",
+                "Effect": "Allow",
+                "Action": [
+                  "dynamodb:ListTables"
+                ],
+                "Resource": "*"
+              }
+            ]
+          }
+        }
+      ],
+      "Groups": {},
+      "ResolvedManagedPolicies": {}
+    },
+    "new_test": {
+      "UserArn": "arn:aws:iam::380421147412:user/new_test",
+      "CreateDate": "2026-02-26T00:16:09+00:00",
+      "AttachedManagedPolicies": [],
+      "InlinePolicies": [],
+      "Groups": {},
+      "ResolvedManagedPolicies": {}
+    },
+    "test": {
+      "UserArn": "arn:aws:iam::380421147412:user/test",
+      "CreateDate": "2026-02-25T03:45:42+00:00",
+      "AttachedManagedPolicies": [],
+      "InlinePolicies": [
+        {
+          "PolicyName": "test_lambda",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "VisualEditor0",
+                "Effect": "Allow",
+                "Action": "lambda:*",
+                "Resource": "*"
+              }
+            ]
+          }
+        },
+        {
+          "PolicyName": "test_policy",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "VisualEditor0",
+                "Effect": "Allow",
+                "Action": "ec2:*",
+                "Resource": "*"
+              }
+            ]
+          }
+        },
+        {
+          "PolicyName": "test_RDS",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "VisualEditor0",
+                "Effect": "Allow",
+                "Action": "rds:*",
+                "Resource": "*"
+              }
+            ]
+          }
+        },
+        {
+          "PolicyName": "test_s3",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "VisualEditor0",
+                "Effect": "Allow",
+                "Action": "s3:*",
+                "Resource": "*"
+              }
+            ]
+          }
+        },
+        {
+          "PolicyName": "test_this_thing",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "VisualEditor0",
+                "Effect": "Allow",
+                "Action": "iam:*",
+                "Resource": "*"
+              }
+            ]
+          }
+        }
+      ],
+      "Groups": {},
+      "ResolvedManagedPolicies": {}
+    },
+    "upload_s3": {
+      "UserArn": "arn:aws:iam::380421147412:user/upload_s3",
+      "CreateDate": "2025-07-15T17:14:57+00:00",
+      "AttachedManagedPolicies": [
+        {
+          "PolicyName": "AmazonEC2FullAccess",
+          "PolicyArn": "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+        },
+        {
+          "PolicyName": "IAMFullAccess",
+          "PolicyArn": "arn:aws:iam::aws:policy/IAMFullAccess"
+        },
+        {
+          "PolicyName": "AdministratorAccess",
+          "PolicyArn": "arn:aws:iam::aws:policy/AdministratorAccess"
+        }
+      ],
+      "InlinePolicies": [
+        {
+          "PolicyName": "create_user_cli",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "Statement1",
+                "Effect": "Allow",
+                "Action": [
+                  "iam:*"
+                ],
+                "Resource": "*"
+              }
+            ]
+          }
+        },
+        {
+          "PolicyName": "list_dynamo_db",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "Statement1",
+                "Effect": "Allow",
+                "Action": [
+                  "dynamodb:ListTables"
+                ],
+                "Resource": "*"
+              }
+            ]
+          }
+        },
+        {
+          "PolicyName": "power_s3_policy",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "Statement1",
+                "Effect": "Allow",
+                "Action": [
+                  "s3:*"
+                ],
+                "Resource": "*"
+              }
+            ]
+          }
+        }
+      ],
+      "Groups": {},
+      "ResolvedManagedPolicies": {
+        "arn:aws:iam::aws:policy/AmazonEC2FullAccess": {
+          "PolicyArn": "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
+          "DefaultVersionId": "v5",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Action": "ec2:*",
+                "Effect": "Allow",
+                "Resource": "*"
+              },
+              {
+                "Effect": "Allow",
+                "Action": "elasticloadbalancing:*",
+                "Resource": "*"
+              },
+              {
+                "Effect": "Allow",
+                "Action": "cloudwatch:*",
+                "Resource": "*"
+              },
+              {
+                "Effect": "Allow",
+                "Action": "autoscaling:*",
+                "Resource": "*"
+              },
+              {
+                "Effect": "Allow",
+                "Action": "iam:CreateServiceLinkedRole",
+                "Resource": "*",
+                "Condition": {
+                  "StringEquals": {
+                    "iam:AWSServiceName": [
+                      "autoscaling.amazonaws.com",
+                      "ec2scheduled.amazonaws.com",
+                      "elasticloadbalancing.amazonaws.com",
+                      "spot.amazonaws.com",
+                      "spotfleet.amazonaws.com",
+                      "transitgateway.amazonaws.com"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "RetrievedAt": "2026-02-26T00:22:52.298331+00:00"
+        },
+        "arn:aws:iam::aws:policy/IAMFullAccess": {
+          "PolicyArn": "arn:aws:iam::aws:policy/IAMFullAccess",
+          "DefaultVersionId": "v2",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "iam:*",
+                  "organizations:DescribeAccount",
+                  "organizations:DescribeOrganization",
+                  "organizations:DescribeOrganizationalUnit",
+                  "organizations:DescribePolicy",
+                  "organizations:ListChildren",
+                  "organizations:ListParents",
+                  "organizations:ListPoliciesForTarget",
+                  "organizations:ListRoots",
+                  "organizations:ListPolicies",
+                  "organizations:ListTargetsForPolicy"
+                ],
+                "Resource": "*"
+              }
+            ]
+          },
+          "RetrievedAt": "2026-02-26T00:22:52.475304+00:00"
+        },
+        "arn:aws:iam::aws:policy/AdministratorAccess": {
+          "PolicyArn": "arn:aws:iam::aws:policy/AdministratorAccess",
+          "DefaultVersionId": "v1",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": "*",
+                "Resource": "*"
+              }
+            ]
+          },
+          "RetrievedAt": "2026-02-26T00:22:52.665245+00:00"
+        }
+      }
+    },
+    "web_test": {
+      "UserArn": "arn:aws:iam::380421147412:user/web_test",
+      "CreateDate": "2026-02-25T19:35:51+00:00",
+      "AttachedManagedPolicies": [
+        {
+          "PolicyName": "IAMUserChangePassword",
+          "PolicyArn": "arn:aws:iam::aws:policy/IAMUserChangePassword"
+        }
+      ],
+      "InlinePolicies": [
+        {
+          "PolicyName": "web_all_detect",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "VisualEditor0",
+                "Effect": "Allow",
+                "Action": "iam:*",
+                "Resource": "*"
+              }
+            ]
+          }
+        }
+      ],
+      "Groups": {},
+      "ResolvedManagedPolicies": {
+        "arn:aws:iam::aws:policy/IAMUserChangePassword": {
+          "PolicyArn": "arn:aws:iam::aws:policy/IAMUserChangePassword",
+          "DefaultVersionId": "v5",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "iam:ChangePassword"
+                ],
+                "Resource": [
+                  "arn:aws:iam::*:user/${aws:username}",
+                  "arn:aws:iam::*:user/*/${aws:username}"
+                ]
+              },
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "iam:GetAccountPasswordPolicy"
+                ],
+                "Resource": "*"
+              }
+            ]
+          },
+          "RetrievedAt": "2026-02-26T00:22:53.138777+00:00"
+        }
+      }
+    }
+  }
+}
