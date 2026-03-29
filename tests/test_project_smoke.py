@@ -1,7 +1,7 @@
-import iam_drift_detector as detector
-import explain_drift_with_gemini as recommender
-import dashboard_app
-from dashboard_app import app
+import detect_iam_drift as detector
+import generate_drift_recommendations as recommender
+import app as dashboard_app
+from app import app
 
 
 def test_normalize_policy_doc_ignores_statement_order():

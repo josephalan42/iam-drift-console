@@ -1,7 +1,7 @@
 ﻿# =========================
-# FILE 2: iam_drift_detector.py
+# FILE 2: detect_iam_drift.py
 # Purpose:
-#   - Compare baseline_sot.json vs current_snapshot.json
+#   - Compare baseline_snapshot.json vs current_snapshot.json
 #   - Output deterministic drift report: drift_report.json
 # Notes:
 #   - Handles new JSON structure: {"_meta":..., "users": {...}}
@@ -15,11 +15,11 @@ from copy import deepcopy
 from typing import Any, Dict, List
 
 
-PROJECT_DIR = r"D:\test_work\project_test"
-BASELINE_PATH = os.path.join(PROJECT_DIR, "baseline_sot.json")
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+BASELINE_PATH = os.path.join(PROJECT_DIR, "baseline_snapshot.json")
 CURRENT_PATH = os.path.join(PROJECT_DIR, "current_snapshot.json")
 OUT_PATH = os.path.join(PROJECT_DIR, "drift_report.json")
-CONTEXT_PATH = os.path.join(PROJECT_DIR, "drift_context.json")
+CONTEXT_PATH = os.path.join(PROJECT_DIR, "event_context.json")
 CHANGE_FILTER = os.environ.get("DRIFT_CHANGE_FILTER", "policy_updates").strip().lower()
 
 POLICY_UPDATE_CHANGE_TYPES = {

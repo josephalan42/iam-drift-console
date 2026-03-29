@@ -6,7 +6,7 @@
   },
   "users": {
     "Alan": {
-      "UserArn": "arn:aws:iam::380421147412:user/Alan",
+      "UserArn": "arn:aws:iam::111122223333:user/Alan",
       "CreateDate": "2025-07-10T13:03:36+00:00",
       "AttachedManagedPolicies": [
         {
@@ -106,7 +106,7 @@
       }
     },
     "Alice": {
-      "UserArn": "arn:aws:iam::380421147412:user/Alice",
+      "UserArn": "arn:aws:iam::111122223333:user/Alice",
       "CreateDate": "2025-07-02T14:26:26+00:00",
       "AttachedManagedPolicies": [],
       "InlinePolicies": [
@@ -147,7 +147,7 @@
       "ResolvedManagedPolicies": {}
     },
     "Bob": {
-      "UserArn": "arn:aws:iam::380421147412:user/Bob",
+      "UserArn": "arn:aws:iam::111122223333:user/Bob",
       "CreateDate": "2025-07-10T16:27:27+00:00",
       "AttachedManagedPolicies": [],
       "InlinePolicies": [
@@ -172,7 +172,7 @@
       "ResolvedManagedPolicies": {}
     },
     "new_test": {
-      "UserArn": "arn:aws:iam::380421147412:user/new_test",
+      "UserArn": "arn:aws:iam::111122223333:user/new_test",
       "CreateDate": "2026-02-26T00:16:09+00:00",
       "AttachedManagedPolicies": [],
       "InlinePolicies": [],
@@ -180,7 +180,7 @@
       "ResolvedManagedPolicies": {}
     },
     "test": {
-      "UserArn": "arn:aws:iam::380421147412:user/test",
+      "UserArn": "arn:aws:iam::111122223333:user/test",
       "CreateDate": "2026-02-25T03:45:42+00:00",
       "AttachedManagedPolicies": [],
       "InlinePolicies": [
@@ -259,7 +259,7 @@
       "ResolvedManagedPolicies": {}
     },
     "upload_s3": {
-      "UserArn": "arn:aws:iam::380421147412:user/upload_s3",
+      "UserArn": "arn:aws:iam::111122223333:user/upload_s3",
       "CreateDate": "2025-07-15T17:14:57+00:00",
       "AttachedManagedPolicies": [
         {
@@ -419,7 +419,7 @@
       }
     },
     "web_test": {
-      "UserArn": "arn:aws:iam::380421147412:user/web_test",
+      "UserArn": "arn:aws:iam::111122223333:user/web_test",
       "CreateDate": "2026-02-25T19:35:51+00:00",
       "AttachedManagedPolicies": [
         {

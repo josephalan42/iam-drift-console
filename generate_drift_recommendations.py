@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 from google import genai
 
 
-PROJECT_DIR = r"D:\test_work\project_test"
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 DRIFT_PATH = os.path.join(PROJECT_DIR, "drift_report.json")
 OUT_PATH = os.path.join(PROJECT_DIR, "drift_recommendations.json")
 

@@ -31,19 +31,19 @@ Result:
 ```
 
 Warning noted:
-- `dashboard_app.py` uses `datetime.utcnow()`, which is deprecated in Python 3.13.
+- `app.py` uses `datetime.utcnow()`, which is deprecated in Python 3.13.
 
 ### 2. Drift Detector
 Command:
 
 ```powershell
-python iam_drift_detector.py
+python detect_iam_drift.py
 ```
 
 Result:
 
 ```text
-[OK] Drift report written to: D:\test_work\project_test\drift_report.json
+[OK] Drift report written to: drift_report.json
 {
   "added_users": ["new_test", "test", "web_test"],
   "removed_users": [],
@@ -56,7 +56,7 @@ Result:
 Command:
 
 ```powershell
-python explain_drift_with_gemini.py
+python generate_drift_recommendations.py
 ```
 
 Result:
@@ -65,7 +65,7 @@ Result:
 [1/3] USER_ADDED_WITH_POLICIES principal=new_test
 [2/3] USER_ADDED_WITH_POLICIES principal=test
 [3/3] USER_ADDED_WITH_POLICIES principal=web_test
-[OK] Wrote: D:\test_work\project_test\drift_recommendations.json
+[OK] Wrote: drift_recommendations.json
 ```
 
 Recommendation sample:
@@ -88,8 +88,8 @@ Total issues:
 - Low: 14
 ```
 
-Main finding:
-- `dashboard_app.py` runs Flask with `debug=True`, which Bandit flags as a high-severity issue.
+Main finding at the time of the scan:
+- the Flask app was running with `debug=True`, which Bandit flags as a high-severity issue.
 
 Other findings:
 - Use of `subprocess` in watcher/dashboard scripts

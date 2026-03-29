@@ -1,10 +1,10 @@
 ﻿# =========================
-# FILE 1: iam_export_snapshot.py
+# FILE 1: export_iam_snapshot.py
 # Purpose:
 #   - Export CURRENT IAM users + user/group policies to JSON
 #   - Includes resolved managed policy documents (recommended for AI explanations)
 # Output:
-#   D:\test_work\project_test\current_snapshot.json (or baseline_sot.json if you set OUT_FILENAME)
+#   current_snapshot.json (or baseline_snapshot.json if you set OUT_FILENAME)
 # =========================
 
 import boto3
@@ -15,8 +15,8 @@ from datetime import datetime, timezone
 from botocore.exceptions import ClientError
 
 
-PROJECT_DIR = r"D:\test_work\project_test"
-OUT_FILENAME = "current_snapshot.json"   # change to "baseline_sot.json" when capturing baseline
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+OUT_FILENAME = "current_snapshot.json"   # change to "baseline_snapshot.json" when capturing baseline
 OUT_PATH = os.path.join(PROJECT_DIR, OUT_FILENAME)
 
 

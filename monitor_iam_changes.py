@@ -20,14 +20,14 @@ CLOUDTRAIL_BUCKET = os.environ.get("CLOUDTRAIL_BUCKET", "YOUR_CLOUDTRAIL_BUCKET"
 CLOUDTRAIL_PREFIX = os.environ.get("CLOUDTRAIL_PREFIX", "AWSLogs/")  # set to your CloudTrail prefix
 REGION = os.environ.get("AWS_REGION", "us-east-1")
 
-PROJECT_DIR = r"D:\test_work\project_test"
-CHECKPOINT_PATH = os.path.join(PROJECT_DIR, "checkpoint.json")
-DRIFT_CONTEXT_PATH = os.path.join(PROJECT_DIR, "drift_context.json")
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+CHECKPOINT_PATH = os.path.join(PROJECT_DIR, "watcher_checkpoint.json")
+DRIFT_CONTEXT_PATH = os.path.join(PROJECT_DIR, "event_context.json")
 
-EXPORTER = os.path.join(PROJECT_DIR, "iam_export_snapshot.py")
-DRIFT_DETECTOR = os.path.join(PROJECT_DIR, "iam_drift_detector.py")
-# OPTIONAL: Gemini explainer
-GEMINI_EXPLAINER = os.path.join(PROJECT_DIR, "explain_drift_with_gemini.py")
+EXPORTER = os.path.join(PROJECT_DIR, "export_iam_snapshot.py")
+DRIFT_DETECTOR = os.path.join(PROJECT_DIR, "detect_iam_drift.py")
+# OPTIONAL: AI recommendation generator
+GEMINI_EXPLAINER = os.path.join(PROJECT_DIR, "generate_drift_recommendations.py")
 RUN_GEMINI_ON_CHANGE = os.environ.get("RUN_GEMINI_ON_CHANGE", "1").strip().lower() in ("1", "true", "yes")
 
 POLL_SECONDS = 20
@@ -212,7 +212,7 @@ def trigger_pipeline(trigger_rec: Dict[str, Any]) -> None:
         if os.path.exists(GEMINI_EXPLAINER):
             subprocess.check_call([sys.executable, GEMINI_EXPLAINER])
         else:
-            print("[WARN] Skipping recommendations (missing explain_drift_with_gemini.py).")
+            print("[WARN] Skipping recommendations (missing generate_drift_recommendations.py).")
 
 
 # ----------------------------

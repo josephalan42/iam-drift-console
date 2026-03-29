@@ -11,10 +11,10 @@ from typing import Any, Dict, List
 from flask import Flask, jsonify, render_template
 
 
-PROJECT_DIR = r"D:\test_work\project_test"
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 DRIFT_REPORT_PATH = os.path.join(PROJECT_DIR, "drift_report.json")
 DRIFT_RECOMMENDATIONS_PATH = os.path.join(PROJECT_DIR, "drift_recommendations.json")
-WATCHER_SCRIPT_PATH = os.path.join(PROJECT_DIR, "watch_iam_changes_local.py")
+WATCHER_SCRIPT_PATH = os.path.join(PROJECT_DIR, "monitor_iam_changes.py")
 WATCHER_LOG_PATH = os.path.join(PROJECT_DIR, "watcher_runtime.log")
 ERROR_LOG_PATH = os.path.join(PROJECT_DIR, "error.logs")
 
@@ -104,8 +104,13 @@ def ensure_watcher_running() -> bool:
         if not os.path.exists(WATCHER_SCRIPT_PATH):
             return False
 
-        _watcher_log_file = open(WATCHER_LOG_PATH, "a", encoding="utf-8")
-        _watcher_err_file = open(ERROR_LOG_PATH, "a", encoding="utf-8")
+        try:
+            _watcher_log_file = open(WATCHER_LOG_PATH, "a", encoding="utf-8")
+            _watcher_err_file = open(ERROR_LOG_PATH, "a", encoding="utf-8")
+        except OSError:
+            _watcher_log_file = None
+            _watcher_err_file = None
+            return False
         _watcher_process = subprocess.Popen(
             [sys.executable, WATCHER_SCRIPT_PATH],
             cwd=PROJECT_DIR,
@@ -238,4 +243,4 @@ def api_data():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True, use_reloader=False)
+    app.run(host="127.0.0.1", port=5000, debug=False, use_reloader=False)
