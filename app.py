@@ -5,7 +5,7 @@ import sys
 import threading
 import hashlib
 import atexit
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 from flask import Flask, jsonify, render_template
@@ -15,6 +15,9 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 DRIFT_REPORT_PATH = os.path.join(PROJECT_DIR, "drift_report.json")
 DRIFT_RECOMMENDATIONS_PATH = os.path.join(PROJECT_DIR, "drift_recommendations.json")
 WATCHER_SCRIPT_PATH = os.path.join(PROJECT_DIR, "monitor_iam_changes.py")
+EXPORT_SCRIPT_PATH = os.path.join(PROJECT_DIR, "export_iam_snapshot.py")
+DETECT_SCRIPT_PATH = os.path.join(PROJECT_DIR, "detect_iam_drift.py")
+RECOMMEND_SCRIPT_PATH = os.path.join(PROJECT_DIR, "generate_drift_recommendations.py")
 WATCHER_LOG_PATH = os.path.join(PROJECT_DIR, "watcher_runtime.log")
 ERROR_LOG_PATH = os.path.join(PROJECT_DIR, "error.logs")
 
@@ -172,9 +175,48 @@ def build_view_model() -> Dict[str, Any]:
         "recommendations": recommendation_rows,
         "severity_counts": severity_counts,
         "change_type_counts": _count_change_types(change_rows),
-        "last_updated_utc": datetime.utcnow().isoformat() + "Z",
+        "last_updated_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "data_hash": compute_data_hash(),
         "watcher_running": watcher_running,
+    }
+
+
+def run_pipeline_refresh() -> Dict[str, Any]:
+    steps = [
+        ("export_snapshot", EXPORT_SCRIPT_PATH),
+        ("detect_drift", DETECT_SCRIPT_PATH),
+    ]
+    if os.path.exists(RECOMMEND_SCRIPT_PATH):
+        steps.append(("generate_recommendations", RECOMMEND_SCRIPT_PATH))
+
+    completed: List[str] = []
+    for step_name, script_path in steps:
+        if not os.path.exists(script_path):
+            return {
+                "ok": False,
+                "error": f"Missing script: {os.path.basename(script_path)}",
+                "completed_steps": completed,
+            }
+        try:
+            subprocess.run(
+                [sys.executable, script_path],
+                cwd=PROJECT_DIR,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            completed.append(step_name)
+        except subprocess.CalledProcessError as exc:
+            return {
+                "ok": False,
+                "error": exc.stderr.strip() or exc.stdout.strip() or f"{step_name} failed",
+                "completed_steps": completed,
+            }
+
+    return {
+        "ok": True,
+        "completed_steps": completed,
+        "data_hash": compute_data_hash(),
     }
 
 
@@ -240,6 +282,13 @@ def dashboard() -> str:
 @app.route("/api/data")
 def api_data():
     return jsonify(build_view_model())
+
+
+@app.route("/api/refresh", methods=["POST"])
+def api_refresh():
+    result = run_pipeline_refresh()
+    status = 200 if result.get("ok") else 500
+    return jsonify(result), status
 
 
 if __name__ == "__main__":

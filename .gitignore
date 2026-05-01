@@ -11,3 +11,9 @@ drift_report.json
 drift_recommendations.json
 event_context.json
 watcher_checkpoint.json
+.tooling-temp/
+TESTING_PLAN.md
+TEST_RESULTS.md
+WEEK*.md
+tests/
+run_security_checks.ps1

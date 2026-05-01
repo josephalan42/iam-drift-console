@@ -79,9 +79,10 @@
             <p class="search-hint">Examples: <button class="hint-chip" type="button" data-filter="critical">critical</button><button class="hint-chip" type="button" data-filter="iam:*">iam:*</button><button class="hint-chip" type="button" data-filter="test_lambda">test_lambda</button></p>
           </div>
           <button id="themeToggleBtn" type="button">Light Theme</button>
-          <button id="refreshBtn" type="button">Refresh</button>
+          <button id="refreshBtn" type="button">Refresh From AWS</button>
         </div>
       </header>
+      <p id="refreshStatus" class="command-help"></p>
 
       <section class="overview-grid">
         <article class="hero-card">
@@ -298,7 +299,7 @@
       });
     }
 
-    async function refreshData() {
+    async function pollData() {
       const res = await fetch("/api/data", { cache: "no-store" });
       if (!res.ok) return;
       const data = await res.json();
@@ -308,6 +309,43 @@
       }
       const el = document.getElementById("updatedAt");
       if (el && data.last_updated_utc) el.textContent = data.last_updated_utc;
+    }
+
+    async function refreshData() {
+      const status = document.getElementById("refreshStatus");
+      const button = document.getElementById("refreshBtn");
+      if (status) {
+        status.textContent = "Refreshing snapshot and drift data...";
+      }
+      if (button) {
+        button.disabled = true;
+      }
+
+      try {
+        const res = await fetch("/api/refresh", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          if (status) {
+            status.textContent = data.error || "Refresh failed. Check AWS credentials or local files.";
+          }
+          return;
+        }
+        if (status) {
+          status.textContent = "Refresh complete. Reloading results...";
+        }
+        location.reload();
+      } catch (error) {
+        if (status) {
+          status.textContent = "Refresh failed. Check AWS access and try again.";
+        }
+      } finally {
+        if (button) {
+          button.disabled = false;
+        }
+      }
     }
 
     document.getElementById("refreshBtn").addEventListener("click", refreshData);
@@ -326,7 +364,7 @@
       });
     });
     applyTheme(document.documentElement.getAttribute("data-theme") || "dark");
-    setInterval(refreshData, 4000);
+    setInterval(pollData, 4000);
   </script>
 </body>
 </html>

@@ -69,6 +69,12 @@ Run the smoke test suite with:
 python -m pytest -q
 ```
 
+Run the project security checks with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\run_security_checks.ps1
+```
+
 ## Generated Local Files
 
 The following files are generated locally during runs and are intentionally ignored by Git:
